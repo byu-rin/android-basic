@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val textDate = binding.textDate
         val buttonDate = binding.buttonDate
 
         val calendarBox = Calendar.getInstance() // 현재 시간을 기준으로 달력 객체 생성
