@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
             DatePickerDialog(this, dateBox, calendarBox.get(Calendar.YEAR), calendarBox.get(Calendar.MONTH), calendarBox.get(Calendar.DAY_OF_MONTH)).show()
         }
     }
-
     // 달력 객체에 설정된 날짜를 텍스트 형식으로 변환하여 텍스트뷰에 업데이트
     private fun updateText(calendar: Calendar){
         val dateFormat = "dd-MM-yyyy" // 날짜 출력 형식 지정
