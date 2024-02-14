@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -17,6 +18,7 @@ import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.byurin.notification.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -39,21 +41,22 @@ class MainActivity : AppCompatActivity() {
 
         // 알림 클릭 시 실행한 Intent 생성
         val intent = Intent(this, MainActivity::class.java) // 현재 액티비티에서 다시 현재 액티비티로 이동하는 인텐트
-        // TaskStackBuilder 는 인텐트 작업 스택 관리, 스택에 새로운 인테튼 추가하는 기능 제공
-        val pendingIntent = TaskStackBuilder.create(this).run {
-            // 현재 액티비티를 부모 스택에 추가(알림 클릭 시 이전 화면에 표시되었던 액티비티로 돌아갈 수 있다.)
-            addNextIntentWithParentStack(intent)
-            // 인텐트를 실행하는 PendingIntent 객체 가져옴.
-            // PendingIntent.FLAG_UPDATE_CURRENT 는 이미 존재하는 PendingIntent가 있을 경우 해당 PendingIntent를 업데이트하여 사용하도록 설정
-            // 인텐트가 실행될 때마다 동일한 PendingIntent가 사용, 새로운 인텐트가 이전 인텐트 대체
-            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        // API 레벨 따라 적절한 PendingIntent 생성
+        val pendingIntent: PendingIntent? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // API 레벨 23 이상인 경우, 불변 PendingIntent 생성
+            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        } else {
+            // API 레벨 22 이하인 경우, 기존 방식으로 PendingIntent 생성
+            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
+
 
         // 알림 생성
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("뷰린이가 다가오고 있어요.") // 알림 제목
             .setContentText("뷰린이와 안드로이드 앱을 만들어보세요.") // 알림 내용
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // 알림 아이콘
+            .setSmallIcon(R.drawable.logo_icon) // 알림 아이콘
             .setContentIntent(pendingIntent) // 알림 클릭 시 실행할 PendingIntent
             .build()
 
